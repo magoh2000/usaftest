@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: |
+        docker build . --file Dockerfile --tag node-app:${{ github.run_number}}
+        curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"
+        pwd
+        chmod +x sysdig-cli-scanner
+        SECURE_API_TOKEN=${{ secrets.SYSDIG_SECURE_API_TOKEN}} ./sysdig-cli-scanner -a https://us2.app.sysdig.com usaftest:${{ github.run_number}}      
