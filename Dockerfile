@@ -1,3 +1,5 @@
-FROM alpine:3.16.3
-WORKDIR /root/
-RUN wget https://repo1.maven.org/maven2/co/elastic/apm/apm-agent-attach/1.36.0/apm-agent-attach-1.36.0.jar
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
+COPY --from=base /ruby27 /ruby27
+RUN setx /M PATH "C:\ruby27\bin;%PATH%"
+USER ContainerUser
+CMD ["powershell", "-command", "fluentd"]
